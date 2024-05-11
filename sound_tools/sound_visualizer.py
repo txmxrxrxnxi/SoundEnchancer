@@ -17,6 +17,7 @@ class SoundWaveform:
         Returns:
             None.
         """
+        
         channels = audio.shape[1]
         length = audio.shape[0] / samplerate
 

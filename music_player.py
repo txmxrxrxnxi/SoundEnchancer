@@ -1,15 +1,18 @@
 # GUI Imports
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, ttk
 import pygame
 
 # Math Imports
 from scipy.io import wavfile
 import numpy as np
 
+# OS imports
+from os import path
+
 # Practical Imports
-from sound_enhansement import SoundEnhansement
-from sound_visualizer import SoundWaveform
+from sound_tools.sound_enhansement import SoundEnhansement
+from sound_tools.sound_visualizer import SoundWaveform
 from helpers import create_temp_file, delete_temp_file
 
 
@@ -25,6 +28,7 @@ class MusicPlayer:
 
     status: tk.StringVar
     track: tk.StringVar
+    proccesing_method: ttk.Combobox
 
     def __init__(self, window):
         self.window = window
@@ -42,8 +46,8 @@ class MusicPlayer:
         self.window.title('Simple Audio Player')
 
         self.__init_track_frame()
-        self.__init_button_frame()
-        self.__init_procces_frame()
+        self.__init_original_frame()
+        self.__init_commands_frame()
         self.__init_proccessed_frame()
 
         self.__change_buttons_state("disabled")
@@ -51,6 +55,10 @@ class MusicPlayer:
         return
 
     def __init_menubar(self):
+        """
+        Initializes the menu bar with File and Help menus.
+        """
+
         menubar = tk.Menu(self.window)
         self.window.config(menu=menubar)
 
@@ -68,14 +76,18 @@ class MusicPlayer:
         helpmenu.add_command(label="About", command=self.__show_about)
         helpmenu.add_command(label="Show help...", command=self.__show_help)
 
-        self.window.bind('<Control-o>', lambda e: self.__browse_file())
-        self.window.bind('<Control-s>', lambda e: self.__save_file())
-        self.window.bind('<Control-w>', lambda e: self.__close_file())
-        self.window.bind('<Control-q>', lambda e: self.__proper_exit())
+        self.window.bind('<Control-o>', lambda _: self.__browse_file())
+        self.window.bind('<Control-s>', lambda _: self.__save_file())
+        self.window.bind('<Control-w>', lambda _: self.__close_file())
+        self.window.bind('<Control-q>', lambda _: self.__proper_exit())
         self.window.protocol("WM_DELETE_WINDOW", self.__proper_exit)
         return
 
     def __init_track_frame(self):
+        """
+        Initializes the track frame which displays the current track and its status.
+        """
+
         self.track = tk.StringVar()
         self.status = tk.StringVar()
 
@@ -88,29 +100,49 @@ class MusicPlayer:
         self.status.set("Stopped")
         return
 
-    def __init_button_frame(self):
-        button_frame = tk.LabelFrame(self.window, text="Original Control Panel")
-        button_frame.pack(fill=tk.X)
-        tk.Button(button_frame, 
+    def __init_original_frame(self):
+        """
+        Initializes the button frame which contains the PLAY, STOP, and SHOW WAVEFORM 
+        buttons for the original audio.
+        """
+
+        original_frame = tk.LabelFrame(self.window, text="Original Control Panel")
+        original_frame.pack(fill=tk.X)
+        tk.Button(original_frame, 
                   command=lambda: self.__play_song(self.filename), 
                   text="PLAY").grid(row=0, column=0)
-        tk.Button(button_frame, 
+        tk.Button(original_frame, 
                   command=self.__stop_song, 
                   text="STOP").grid(row=0, column=1)
-        tk.Button(button_frame, 
+        tk.Button(original_frame, 
                   command=lambda: self.__plot_waveform(self.audio, self.samplerate), 
                   text="SHOW WAVEFORM").grid(row=0, column=2)
+        
         return
 
-    def __init_procces_frame(self):
-        proccess_frame = tk.LabelFrame(self.window, text="Proccess Control Panel")
-        proccess_frame.pack(fill=tk.X)
-        tk.Button(proccess_frame, 
+    def __init_commands_frame(self):
+        """
+        Initializes the commands frame which contains the PROCCESS button and 
+        a combobox for selecting the processing method.
+        """
+
+        commands_frame = tk.LabelFrame(self.window, text="Proccess Control Panel")
+        commands_frame.pack(fill=tk.X)
+        tk.Button(commands_frame, 
                   command=self.__proccess_song, 
                   text="PROCCESS").grid(row=0, column=0)
+        self.proccesing_method = ttk.Combobox(commands_frame,
+                     values=["Lib Wiener", "Wiener Filtering"])
+        self.proccesing_method.grid(row=0, column=1)
+
         return
 
     def __init_proccessed_frame(self):
+        """
+        Initializes the processed frame which contains the PLAY, STOP, and SHOW WAVEFORM 
+        buttons for the processed audio.
+        """
+        
         proccessed_frame = tk.LabelFrame(self.window, text="Proccessed Audio Control Panel")
         proccessed_frame.pack(fill=tk.X)
         tk.Button(proccessed_frame, 
@@ -133,7 +165,8 @@ class MusicPlayer:
         if self.filename == "":
             return
 
-        self.tempfilename = create_temp_file(self.filename)
+        temp_path = path.dirname(path.abspath(__file__))
+        self.tempfilename = create_temp_file(temp_path + "\\" + path.basename(self.filename))
         self.track.set(self.filename)
 
         self.samplerate, self.audio = wavfile.read(self.filename)
@@ -181,7 +214,13 @@ class MusicPlayer:
         return
 
     def __proccess_song(self):
-        self.proccessed_audio = SoundEnhansement.lib_wiener(self.audio)
+        processing_type = self.proccesing_method.get()
+
+        if processing_type == "Wiener Filtering":
+            self.proccessed_audio = SoundEnhansement.wiener(self.samplerate, self.audio)
+        else:
+            self.proccessed_audio = SoundEnhansement.lib_wiener(self.audio)
+
         wavfile.write(self.tempfilename, self.samplerate, self.proccessed_audio)
         return
     
