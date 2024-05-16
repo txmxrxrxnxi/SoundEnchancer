@@ -2,6 +2,7 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 import pygame
+import json
 
 # Math Imports
 from scipy.io import wavfile
@@ -17,6 +18,7 @@ from helpers import create_temp_file, delete_temp_file
 
 
 class MusicPlayer:
+    language: str = ""
     filename: str = ""
     tempfilename: str = ""
 
@@ -45,6 +47,7 @@ class MusicPlayer:
         self.window.geometry('800x600')
         self.window.title('Simple Audio Player')
 
+        self.__load_language()
         self.__init_track_frame()
         self.__init_original_frame()
         self.__init_commands_frame()
@@ -54,27 +57,43 @@ class MusicPlayer:
         self.__init_menubar()
         return
 
+    def __load_language(self):
+        """
+        Loads language from properties file.
+        """
+        
+        try:
+            with open("./properties/properties.json", 'r') as properties:
+                language_name = json.load(properties)["language"]
+                with open(f"./properties/{language_name}.json", 'r', encoding="utf8") as language_file:
+                    self.language = json.load(language_file)
+        except FileNotFoundError as e:
+            messagebox.showerror("Error", f"Properties file not found: {e.filename}")
+            self.__proper_exit()
+        return
+
+
     def __init_menubar(self):
         """
         Initializes the menu bar with File and Help menus.
         """
-
+        
         menubar = tk.Menu(self.window)
         self.window.config(menu=menubar)
 
         submenu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="File", menu=submenu)
-        submenu.add_command(label="Open", command=self.__browse_file, accelerator='Ctrl+O')
-        submenu.add_command(label="Save", command=self.__save_file, accelerator='Ctrl+S')
+        menubar.add_cascade(label=self.language["file"], menu=submenu)
+        submenu.add_command(label=self.language["open"], command=self.__browse_file, accelerator='Ctrl+O')
+        submenu.add_command(label=self.language["save"], command=self.__save_file, accelerator='Ctrl+S')
         submenu.add_separator()
-        submenu.add_command(label="Close", command=self.__close_file, accelerator='Ctrl+W')
+        submenu.add_command(label=self.language["close"], command=self.__close_file, accelerator='Ctrl+W')
         submenu.add_separator()
-        submenu.add_command(label="Exit", command=self.__proper_exit, accelerator='Ctrl+Q')
+        submenu.add_command(label=self.language["exit"], command=self.__proper_exit, accelerator='Ctrl+Q')
 
         helpmenu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Help", menu=helpmenu)
-        helpmenu.add_command(label="About", command=self.__show_about)
-        helpmenu.add_command(label="Show help...", command=self.__show_help)
+        menubar.add_cascade(label=self.language["help"], menu=helpmenu)
+        helpmenu.add_command(label=self.language["about"], command=self.__show_about)
+        helpmenu.add_command(label=self.language["show_help"], command=self.__show_help)
 
         self.window.bind('<Control-o>', lambda _: self.__browse_file())
         self.window.bind('<Control-s>', lambda _: self.__save_file())
@@ -91,13 +110,13 @@ class MusicPlayer:
         self.track = tk.StringVar()
         self.status = tk.StringVar()
 
-        trackframe = tk.LabelFrame(self.window, text="Track playing:")
+        trackframe = tk.LabelFrame(self.window, text=self.language["track_playing"])
         trackframe.pack(fill=tk.X)
         tk.Label(trackframe, textvariable=self.track).grid(row=0, column=0)
         tk.Label(trackframe, textvariable=self.status).grid(row=1, column=0)
 
-        self.track.set("No Track")
-        self.status.set("Stopped")
+        self.track.set(self.language["no_track"])
+        self.status.set(self.language["stopped"])
         return
 
     def __init_original_frame(self):
@@ -106,17 +125,17 @@ class MusicPlayer:
         buttons for the original audio.
         """
 
-        original_frame = tk.LabelFrame(self.window, text="Original Control Panel")
+        original_frame = tk.LabelFrame(self.window, text=self.language["original_control_panel"])
         original_frame.pack(fill=tk.X)
         tk.Button(original_frame, 
                   command=lambda: self.__play_song(self.filename), 
-                  text="PLAY").grid(row=0, column=0)
+                  text=self.language["play"]).grid(row=0, column=0)
         tk.Button(original_frame, 
                   command=self.__stop_song, 
-                  text="STOP").grid(row=0, column=1)
+                  text=self.language["stop"]).grid(row=0, column=1)
         tk.Button(original_frame, 
                   command=lambda: self.__plot_waveform(self.audio, self.samplerate), 
-                  text="SHOW WAVEFORM").grid(row=0, column=2)
+                  text=self.language["show_waveform"]).grid(row=0, column=2)
         
         return
 
@@ -132,7 +151,7 @@ class MusicPlayer:
                   command=self.__proccess_song, 
                   text="PROCCESS").grid(row=0, column=0)
         self.proccesing_method = ttk.Combobox(commands_frame,
-                     values=["Lib Wiener", "Wiener Filtering"])
+                     values=[self.language["lib_wiener"], self.language["wiener_filtering"]])
         self.proccesing_method.grid(row=0, column=1)
 
         return
@@ -147,17 +166,17 @@ class MusicPlayer:
         proccessed_frame.pack(fill=tk.X)
         tk.Button(proccessed_frame, 
                   command=lambda: self.__play_song(self.tempfilename), 
-                  text="PLAY").grid(row=0, column=0)
+                  text=self.language["play"]).grid(row=0, column=0)
         tk.Button(proccessed_frame, 
                   command=self.__stop_song, 
-                  text="STOP").grid(row=0, column=1)
+                  text=self.language["stop"]).grid(row=0, column=1)
         tk.Button(proccessed_frame, 
                   command=lambda: self.__plot_waveform(self.proccessed_audio, self.samplerate),
-                  text="SHOW WAVEFORM").grid(row=0, column=2)
+                  text=self.language["show_waveform"]).grid(row=0, column=2)
         return
 
     def __plot_waveform(self, audio, samplerate):
-        SoundWaveform.plot_waveform(audio, samplerate)
+        SoundWaveform.plot_spectrogram(audio, samplerate)
         return
 
     def __browse_file(self):
@@ -200,23 +219,23 @@ class MusicPlayer:
     def __play_song(self, song: str):
         pygame.mixer.music.load(song)
         pygame.mixer.music.play()
-        self.status.set("Playing")
+        self.status.set(self.language["playing"])
         return
 
     def __stop_song(self):
         pygame.mixer.music.stop()
-        self.status.set("Stopped")
+        self.status.set(self.language["Stopped"])
         return
 
     def __pause_song(self):
         pygame.mixer.music.pause()
-        self.status.set("Paused")
+        self.status.set(self.language["paused"])
         return
 
     def __proccess_song(self):
         processing_type = self.proccesing_method.get()
 
-        if processing_type == "Wiener Filtering":
+        if processing_type == self.language["wiener_filtering"]:
             self.proccessed_audio = SoundEnhansement.wiener(self.samplerate, self.audio)
         else:
             self.proccessed_audio = SoundEnhansement.lib_wiener(self.audio)
@@ -239,10 +258,10 @@ class MusicPlayer:
         return
     
     def __show_about(self):
-        messagebox.showinfo("About", "Sound Enchancer by Marria Stanovych.")
+        messagebox.showinfo(self.language["about"], self.language["about_text"])
 
     def __show_help(self):
-        messagebox.showinfo("Help", "TODO...")
+        messagebox.showinfo(self.language["Help"], "TODO...")
 
     def __proper_exit(self):
         delete_temp_file(self.tempfilename)

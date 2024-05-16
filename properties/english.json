@@ -1,0 +1,29 @@
+{
+    "file": "File",
+    "open": "Open",
+    "save": "Save",
+    "close": "Close",
+    "exit": "Exit",
+    "help": "Help",
+    "about": "About",
+    "about_text": "Sound Enchancer by Marria Stanovych.",
+    "show_help": "Show help...",
+
+    "track_playing": "Track playing:",
+    "no_track": "No Track",
+    "stopped": "Stopped",
+    "playing": "Playing",
+    "paused": "Paused",
+
+    "original_control_panel": "Original Control Panel",
+    "play": "PLAY",
+    "stop": "STOP",
+    "show_waveform": "SHOW WAVEFORM",
+
+    "proccess_control_panel": "Proccess Control Panel",
+    "proccess": "PROCCESS",
+    "lib_wiener": "Lib Wiener",
+    "wiener_filtering": "Wiener Filtering",
+
+    "processed_audio_control_panel": "Proccessed Audio Control Panel"    
+}
