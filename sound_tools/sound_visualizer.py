@@ -1,7 +1,9 @@
 import numpy as np
+from scipy import signal
 
 from matplotlib import pyplot as plt
 from matplotlib.widgets import CheckButtons
+from matplotlib.colors import LogNorm
 
 
 class SoundWaveform:
@@ -62,6 +64,46 @@ class SoundWaveform:
         else:
             raise NotImplementedError()
         
+        plt.show()
+        return
+    
+    @staticmethod
+    def plot_spectrogram(audio: np.ndarray, samplerate: int) -> None:
+        """
+        Function to show the plot of audio data in spectrogram representation.
+
+        Args:
+            audio (np.ndarray).
+            samplerate (int).
+
+        Returns:
+            None.
+        """
+
+        def plot_spectrogram(audio, samplerate, title):
+            cmap = plt.get_cmap('inferno')
+            Pxx, freqs, bins, im = plt.specgram(audio, NFFT=4096, Fs=samplerate, noverlap=2048, cmap=cmap)
+            plt.imshow(10 * np.log10(Pxx + 1e-12), aspect='auto', cmap=cmap, origin='lower')
+            plt.title(title)
+            plt.xlabel('Time')
+            plt.ylabel('Frequency')
+            plt.colorbar(label='dB')
+
+        # Mono audio
+        if len(audio.shape) == 1:
+            plt.figure(figsize=(10, 4))
+            plot_spectrogram(audio, samplerate, 'Spectrogram (Mono)')
+        
+        # Stereo audio
+        else:
+            plt.figure(figsize=(10, 8))
+            
+            plt.subplot(2, 1, 1)
+            plot_spectrogram(audio[:, 0], samplerate, 'Spectrogram (Channel 1)')
+            
+            plt.subplot(2, 1, 2)
+            plot_spectrogram(audio[:, 1], samplerate, 'Spectrogram (Channel 2)')
+
         plt.show()
         return
     

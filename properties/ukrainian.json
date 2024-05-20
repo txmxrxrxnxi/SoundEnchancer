@@ -19,6 +19,7 @@
     "play": "ВІДТВОРИТИ",
     "stop": "СТОП",
     "show_waveform": "ПОКАЗАТИ ФОРМУ ХВИЛІ",
+    "show_spectrogram": "ПОКАЗАТИ СПЕКТРОГРАМУ",
 
     "proccess_control_panel": "Панель керування обробкою",
     "proccess": "ОБРОБКА",

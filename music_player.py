@@ -136,6 +136,9 @@ class MusicPlayer:
         tk.Button(original_frame, 
                   command=lambda: self.__plot_waveform(self.audio, self.samplerate), 
                   text=self.language["show_waveform"]).grid(row=0, column=2)
+        tk.Button(original_frame, 
+                  command=lambda: self.__plot_spectrogram(self.audio, self.samplerate), 
+                  text=self.language["show_spectrogram"]).grid(row=0, column=3)
         
         return
 
@@ -145,11 +148,11 @@ class MusicPlayer:
         a combobox for selecting the processing method.
         """
 
-        commands_frame = tk.LabelFrame(self.window, text="Proccess Control Panel")
+        commands_frame = tk.LabelFrame(self.window, text=self.language["proccess_control_panel"])
         commands_frame.pack(fill=tk.X)
         tk.Button(commands_frame, 
                   command=self.__proccess_song, 
-                  text="PROCCESS").grid(row=0, column=0)
+                  text=self.language["proccess"]).grid(row=0, column=0)
         self.proccesing_method = ttk.Combobox(commands_frame,
                      values=[self.language["lib_wiener"], self.language["wiener_filtering"]])
         self.proccesing_method.grid(row=0, column=1)
@@ -162,7 +165,7 @@ class MusicPlayer:
         buttons for the processed audio.
         """
         
-        proccessed_frame = tk.LabelFrame(self.window, text="Proccessed Audio Control Panel")
+        proccessed_frame = tk.LabelFrame(self.window, text=self.language["processed_audio_control_panel"])
         proccessed_frame.pack(fill=tk.X)
         tk.Button(proccessed_frame, 
                   command=lambda: self.__play_song(self.tempfilename), 
@@ -173,9 +176,16 @@ class MusicPlayer:
         tk.Button(proccessed_frame, 
                   command=lambda: self.__plot_waveform(self.proccessed_audio, self.samplerate),
                   text=self.language["show_waveform"]).grid(row=0, column=2)
+        tk.Button(proccessed_frame, 
+                  command=lambda: self.__plot_spectrogram(self.proccessed_audio, self.samplerate), 
+                  text=self.language["show_spectrogram"]).grid(row=0, column=3)
         return
 
     def __plot_waveform(self, audio, samplerate):
+        SoundWaveform.plot_waveform(audio, samplerate)
+        return
+    
+    def __plot_spectrogram(self, audio, samplerate):
         SoundWaveform.plot_spectrogram(audio, samplerate)
         return
 

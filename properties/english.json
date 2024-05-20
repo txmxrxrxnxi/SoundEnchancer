@@ -19,6 +19,7 @@
     "play": "PLAY",
     "stop": "STOP",
     "show_waveform": "SHOW WAVEFORM",
+    "show_spectrogram": "SHOW SPECTROGRAM",
 
     "proccess_control_panel": "Proccess Control Panel",
     "proccess": "PROCCESS",
