@@ -9,6 +9,7 @@ from scipy.io import wavfile
 import numpy as np
 
 # OS imports
+import time
 from os import path
 
 # Practical Imports
@@ -150,12 +151,13 @@ class MusicPlayer:
 
         commands_frame = tk.LabelFrame(self.window, text=self.language["proccess_control_panel"])
         commands_frame.pack(fill=tk.X)
-        tk.Button(commands_frame, 
-                  command=self.__proccess_song, 
-                  text=self.language["proccess"]).grid(row=0, column=0)
         self.proccesing_method = ttk.Combobox(commands_frame,
                      values=[self.language["lib_wiener"], self.language["wiener_filtering"]])
-        self.proccesing_method.grid(row=0, column=1)
+        self.proccesing_method.set(self.language["wiener_filtering"])
+        self.proccesing_method.grid(row=0, column=0)
+        tk.Button(commands_frame, 
+                  command=self.__proccess_song, 
+                  text=self.language["proccess"]).grid(row=0, column=1)
 
         return
 
@@ -234,7 +236,7 @@ class MusicPlayer:
 
     def __stop_song(self):
         pygame.mixer.music.stop()
-        self.status.set(self.language["Stopped"])
+        self.status.set(self.language["stopped"])
         return
 
     def __pause_song(self):
@@ -245,12 +247,17 @@ class MusicPlayer:
     def __proccess_song(self):
         processing_type = self.proccesing_method.get()
 
+        start_time = time.time()
         if processing_type == self.language["wiener_filtering"]:
             self.proccessed_audio = SoundEnhansement.wiener(self.samplerate, self.audio)
         else:
-            self.proccessed_audio = SoundEnhansement.lib_wiener(self.audio)
+            self.proccessed_audio = SoundEnhansement.lib_wiener(self.samplerate, self.audio)
+        end_time = time.time()
+        time_taken = end_time - start_time
 
         wavfile.write(self.tempfilename, self.samplerate, self.proccessed_audio)
+        messagebox.showinfo(self.language["processing_time"], 
+            self.language["time_taken"] + str(time_taken))
         return
     
     def __change_buttons_state(self, state: str):
@@ -271,7 +278,7 @@ class MusicPlayer:
         messagebox.showinfo(self.language["about"], self.language["about_text"])
 
     def __show_help(self):
-        messagebox.showinfo(self.language["Help"], "TODO...")
+        messagebox.showinfo(self.language["help"], "TODO...")
 
     def __proper_exit(self):
         delete_temp_file(self.tempfilename)

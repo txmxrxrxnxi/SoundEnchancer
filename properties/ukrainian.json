@@ -23,6 +23,8 @@
 
     "proccess_control_panel": "Панель керування обробкою",
     "proccess": "ОБРОБКА",
+    "processing_time" : "Час обробки",
+    "time_taken" : "Зайнято часу: ",
     "lib_wiener": "Бібліотечна Вінера",
     "wiener_filtering": "Фільтрація Вінера",
     

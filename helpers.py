@@ -1,5 +1,6 @@
 import os
 import ctypes
+from pathlib import Path
 
 
 def make_file_hidden(filepath: str) -> None:
@@ -31,7 +32,7 @@ def make_file_hidden(filepath: str) -> None:
 def create_temp_file(filename: str) -> str:
     """
     Creates a temporary file with the same name and extension as the input file, 
-    but with "_temp" appended to the name. The temporary file is then made hidden.
+    but with "_temp" appended to the name.
 
     Args:
         filename (str): The name of the file for which a temporary file should be created.
@@ -43,11 +44,7 @@ def create_temp_file(filename: str) -> str:
     dir_name, file_name = os.path.split(filename)
     base_name, ext = os.path.splitext(file_name)
     temp_file_name = os.path.join(dir_name, base_name + "_temp" + ext)
-
-    with open(temp_file_name, 'w') as _:
-        pass
-
-    make_file_hidden(temp_file_name)
+    Path(temp_file_name).touch()
     return temp_file_name
 
 def delete_temp_file(tempfilename: str) -> None:

@@ -23,6 +23,8 @@
 
     "proccess_control_panel": "Proccess Control Panel",
     "proccess": "PROCCESS",
+    "processing_time" : "Processing Time",
+    "time_taken" : "Time taken: ",
     "lib_wiener": "Lib Wiener",
     "wiener_filtering": "Wiener Filtering",
 
