@@ -4,9 +4,13 @@ to work with different audio enhansement methods.
 """
 
 
+# Math imports
 import numpy as np
 import scipy as sp
 from scipy import signal
+
+# Other imports
+from typing import Callable, Any
 
 
 class SoundEnhansement:
@@ -14,7 +18,22 @@ class SoundEnhansement:
     Class that contains different sound enhansement methods.
     """
 
-    def audio_decorator(process_channel):
+    def audio_decorator(process_channel: Callable[[int, np.ndarray], np.ndarray]) \
+        -> Callable[[int, np.ndarray], np.ndarray]:
+        """
+        Decorator function for processing audio data.
+
+        This decorator takes a function that processes a single audio channel, and applies it 
+        to each channel of a stereo or mono audio data.
+
+        Args:
+            process_channel (Callable[[int, np.ndarray], np.ndarray]): A function that takes a samplerate and 
+            a numpy array representing an audio channel, and returns a processed numpy array of the same shape.
+
+        Returns:
+            Callable[[int, np.ndarray], np.ndarray]: A resulting wrapper function.
+        """
+
         def wrapper(samplerate: int, data: np.ndarray):
             channels = data.shape[1]
             filtered_data = None
@@ -33,6 +52,16 @@ class SoundEnhansement:
     @staticmethod
     @audio_decorator
     def wiener(samplerate: int, data: np.ndarray):
+        """
+        Applies the custom Wiener filter to the given data.
+
+        Args:
+            data (np.ndarray): The input data to be filtered.
+
+        Returns:
+            np.ndarray: The filtered data.
+        """
+
         def wiener_filter(psd, noise_pds, N):
             H = psd / (psd + noise_pds)
             taps = np.fft.irfft(H, n=N)
@@ -60,7 +89,7 @@ class SoundEnhansement:
     @audio_decorator
     def lib_wiener(samplerate, data: np.ndarray):
         """
-        Applies the Wiener filter to the given data.
+        Applies the SciPy Lib Wiener filter to the given data.
 
         Args:
             data (np.ndarray): The input data to be filtered.
@@ -81,15 +110,3 @@ class SoundEnhansement:
 
         return signal.lfilter(h, 1.0, data)
 
-if __name__ == "__main__":
-    import time
-    from scipy.io import wavfile
-    samplerate, data = wavfile.read("data\\noise\\clip.wav")
-
-    start_time = time.time()
-    res = SoundEnhansement.wiener(samplerate, data)
-    end_time = time.time()
-    execution_time = end_time - start_time
-
-    wavfile.write("data\\clean\\clip_8.wav", samplerate, res)
-    print(f"The process method took {execution_time} seconds to execute.")

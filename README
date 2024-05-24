@@ -1,0 +1,20 @@
+# Wiener Filter Audio Enhancement
+
+## Introduction
+This project provides an implementation of Wiener filtering for audio signal enhancement. It includes a simple GUI interface for users to interact with the Wiener filter and visualize the audio processing results.
+
+## Features
+- **Wiener filtering** for noise reduction in audio signals.
+- **GUI interface** for easy interaction with the filter settings.
+- **Audio visualization** tools for comparing original and enhanced audio.
+- **Multilingual support** with English and Ukrainian language options.
+
+## Installation
+1. Clone the repository to your local machine.
+2. Install the required dependencies.
+3. Run the application through the main script.
+
+## Usage
+To use the Wiener filter audio enhancement:
+1. Launch the GUI from the main script.
+2. Load the audio file you wish to enhance.

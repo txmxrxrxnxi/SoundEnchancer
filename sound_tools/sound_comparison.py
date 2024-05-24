@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from scipy.io import wavfile
 from scipy.signal import stft
 
+
 class SoundComparison:
     @staticmethod
     def compare_audio(data_1: tuple[int, str], data_2: tuple[int, str]):

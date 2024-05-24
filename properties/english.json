@@ -1,4 +1,5 @@
 {
+    "title": "Sound Enchancer",
     "file": "File",
     "open": "Open",
     "save": "Save",
@@ -6,8 +7,9 @@
     "exit": "Exit",
     "help": "Help",
     "about": "About",
-    "about_text": "Sound Enchancer by Marria Stanovych.",
+    "about_text": "Sound Enchancer.\nAuthor: Marria Stanovych.\nVersion: 0.7.",
     "show_help": "Show help...",
+    "help_path": "properties\\help_EN.md",
 
     "track_playing": "Track playing:",
     "no_track": "No Track",

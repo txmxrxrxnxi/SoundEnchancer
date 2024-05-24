@@ -2,8 +2,11 @@ import os
 import ctypes
 from pathlib import Path
 
+import re
 
-def make_file_hidden(filepath: str) -> None:
+
+def make_file_hidden(filepath: str) \
+    -> None:
     """
     Makes a file hidden.
     
@@ -29,7 +32,8 @@ def make_file_hidden(filepath: str) -> None:
 
     return
 
-def create_temp_file(filename: str) -> str:
+def create_temp_file(filename: str) \
+    -> str:
     """
     Creates a temporary file with the same name and extension as the input file, 
     but with "_temp" appended to the name.
@@ -47,7 +51,8 @@ def create_temp_file(filename: str) -> str:
     Path(temp_file_name).touch()
     return temp_file_name
 
-def delete_temp_file(tempfilename: str) -> None:
+def delete_temp_file(tempfilename: str) \
+    -> None:
     """
     Deletes a temporary file if it exists. If not, does not do anything.
 
@@ -63,3 +68,47 @@ def delete_temp_file(tempfilename: str) -> None:
             os.remove(tempfilename)
         except PermissionError:
             pass
+
+def strip_markdown_syntax(text: str) \
+    -> str:
+    """
+    Strips Markdown syntax elements to a raw text.
+
+    Args:
+        text (str): The text to strip.
+
+    Returns:
+        str: stripped text.
+    """
+    patterns = {
+        r'\*\*(.*?)\*\*': r'\1',  # Bold
+        r'\*(.*?)\*': r'\1',      # Italic
+        r'__(.*?)__': r'\1',      # Bold
+        r'_(.*?)_': r'\1',        # Italic
+        r'\#\s*(.*?)\n': r'\1\n', # Headers
+        r'\>(.*?)\n': r'\1\n',    # Blockquotes
+        r'\`(.*?)\`': r'\1',      # Inline code
+    }
+
+    for pattern, replacement in patterns.items():
+        text = re.sub(pattern, replacement, text)
+    
+    return text.strip()
+
+def read_markdown(filepath: str) \
+    -> str:
+    """
+    Reads a markdown into HRML data.
+
+    Args:
+        filepath (str): The path to the markdown file.
+
+    Returns:
+        str: HTML str.
+    """
+
+    with open(filepath, 'r', encoding='utf-8') as file:
+        markdown_content = file.read()
+
+    cleaned_content = strip_markdown_syntax(markdown_content)
+    return cleaned_content
