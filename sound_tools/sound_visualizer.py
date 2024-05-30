@@ -25,15 +25,16 @@ class SoundWaveform:
         if channels == 2:
             time = np.linspace(0., length, audio.shape[0])
             fig, ax = plt.subplots()
-            l0, = ax.plot(time, audio[:, 0], label="Left Channel")
-            l1, = ax.plot(time, audio[:, 1], label="Right Channel")
+            fig.canvas.manager.set_window_title("Форма хвилі")
+            l0, = ax.plot(time, audio[:, 0], label="Лівий канал")
+            l1, = ax.plot(time, audio[:, 1], label="Правий канал")
 
             plt.legend()
-            plt.xlabel("Time [s]")
-            plt.ylabel("Amplitude")
+            plt.xlabel("Час")
+            plt.ylabel("Амплітуда")
 
             rax = plt.axes([0.05, 0.4, 0.1, 0.15])
-            labels = ['Left Channel', 'Right Channel']
+            labels = ["Лівий канал", "Правий канал"]
             visibility = [True, True]
             check = CheckButtons(rax, labels, visibility)
 
@@ -60,7 +61,12 @@ class SoundWaveform:
 
         # For Mono Audio
         else:
-            raise NotImplementedError()
+            time = np.linspace(0., length, audio.shape[0])
+            fig, ax = plt.subplots()
+            ax.plot(time, audio, label="Моно канал")
+            plt.legend()
+            plt.xlabel("Час")
+            plt.ylabel("Амплітуда")
         
         plt.show()
         return
@@ -83,24 +89,24 @@ class SoundWaveform:
             Pxx, freqs, bins, im = plt.specgram(audio, NFFT=4096, Fs=samplerate, noverlap=2048, cmap=cmap)
             plt.imshow(10 * np.log10(Pxx + 1e-12), aspect='auto', cmap=cmap, origin='lower')
             plt.title(title)
-            plt.xlabel('Time')
-            plt.ylabel('Frequency')
+            plt.xlabel('Час')
+            plt.ylabel('Частота')
             plt.colorbar(label='dB')
 
         # Mono audio
         if len(audio.shape) == 1:
             plt.figure(figsize=(10, 4))
-            plot_spectrogram(audio, samplerate, 'Spectrogram (Mono)')
+            plot_spectrogram(audio, samplerate, 'Спектрограма (Моно)')
         
         # Stereo audio
         else:
             plt.figure(figsize=(10, 8))
             
             plt.subplot(2, 1, 1)
-            plot_spectrogram(audio[:, 0], samplerate, 'Spectrogram (Channel 1)')
+            plot_spectrogram(audio[:, 0], samplerate, 'Спектрограма (Лівий канал)')
             
             plt.subplot(2, 1, 2)
-            plot_spectrogram(audio[:, 1], samplerate, 'Spectrogram (Channel 2)')
+            plot_spectrogram(audio[:, 1], samplerate, 'Спектрограма (Правий канал)')
 
         plt.show()
         return

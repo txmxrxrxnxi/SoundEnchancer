@@ -15,6 +15,7 @@ import os
 # Practical Imports
 from sound_tools.sound_enhansement import SoundEnhansement
 from sound_tools.sound_visualizer import SoundWaveform
+from sound_tools.sound_comparison import SoundComparison
 from helpers import create_temp_file, delete_temp_file, read_markdown
 
 
@@ -281,7 +282,7 @@ class MusicPlayer:
         Opens a file dialog to save the processed audio file.
         """
 
-        proccessed_filename = filedialog.asksaveasfile()
+        proccessed_filename = filedialog.asksaveasfilename()
         if proccessed_filename == "":
             return
 
@@ -360,8 +361,11 @@ class MusicPlayer:
         time_taken = end_time - start_time
 
         wavfile.write(self.tempfilename, self.samplerate, self.proccessed_audio)
+        centroid_diff, mean_diff = SoundComparison.compare_audio(self.filename, self.tempfilename)
         messagebox.showinfo(self.language["processing_time"], 
-            self.language["time_taken"] + str(time_taken))
+            self.language["time_taken"] + str(time_taken)
+                            + "\n" + self.language["centroid_diff"] + str(centroid_diff)
+                            + "\n" + self.language["mean_diff"] + str(mean_diff))
         self.__change_buttons_state("normal")
         self.submenu.entryconfig(self.language["save"], state="normal")
         self.submenu.entryconfig(self.language["close"], state="normal")

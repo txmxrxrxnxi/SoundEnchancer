@@ -35,7 +35,10 @@ class SoundEnhansement:
         """
 
         def wrapper(samplerate: int, data: np.ndarray):
-            channels = data.shape[1]
+            try:
+                channels = data.shape[1]
+            except IndexError:
+                channels = 1
             filtered_data = None
 
             # For Stereo Audio
@@ -109,4 +112,3 @@ class SoundEnhansement:
         h, _, _, _ = np.linalg.lstsq(R_matrix, P, rcond=None)
 
         return signal.lfilter(h, 1.0, data)
-
