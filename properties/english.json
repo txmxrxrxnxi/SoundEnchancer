@@ -27,8 +27,8 @@
     "proccess": "PROCCESS",
     "processing_time" : "Processing Time",
     "time_taken" : "Time taken: ",
-    "centroid_diff": "Spectral centroid difference: ",
-    "mean_diff": "Mean Spectral Flatness difference: ",
+    "centroid_diff": "Spectral centroid difference, %: ",
+    "mean_diff": "Mean Spectral Flatness difference, %: ",
     "lib_wiener": "Lib Wiener",
     "wiener_filtering": "Wiener Filtering",
 
