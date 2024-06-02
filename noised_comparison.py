@@ -11,15 +11,17 @@ if __name__ == "__main__":
 
     for file in noised_files:
         file_path = os.path.join("data/noised_10", file)
-        sr, y = scipy.io.wavfile.read(file_path)
+        # y_wiener = SoundEnhansement.wiener(sr, y)
+        # wiener_path = os.path.join("data/wiener_denoised", file)
+        # scipy.io.wavfile.write(wiener_path, sr, y_wiener)
 
-        y_wiener = SoundEnhansement.wiener(sr, y)
+        # y_lib_wiener = SoundEnhansement.lib_wiener(sr, y)
+        # lib_wiener_path = os.path.join("data/lib_wiener_denoised", file)
+        # scipy.io.wavfile.write(lib_wiener_path, sr, y_lib_wiener)
+
         wiener_path = os.path.join("data/wiener_denoised", file)
-        scipy.io.wavfile.write(wiener_path, sr, y_wiener)
-
-        y_lib_wiener = SoundEnhansement.lib_wiener(sr, y)
         lib_wiener_path = os.path.join("data/lib_wiener_denoised", file)
-        scipy.io.wavfile.write(lib_wiener_path, sr, y_lib_wiener)
+
 
         centroid_diff_wiener, mean_diff_wiener = SoundComparison.compare_audio(file_path, wiener_path)
         centroid_diff_lib_wiener, mean_diff_lib_wiener = SoundComparison.compare_audio(file_path, lib_wiener_path)

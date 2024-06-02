@@ -28,7 +28,7 @@ class SoundComparison:
         centroid = librosa.feature.spectral_centroid(S=D)
         snr = librosa.feature.spectral_flatness(y=audio_data)
 
-        return centroid, np.mean(snr)
+        return np.mean(centroid), np.mean(snr)
 
     @staticmethod
     def compare_audio(file_1: str, file_2: str) \
@@ -49,7 +49,13 @@ class SoundComparison:
         centroid_1, mean_1 = SoundComparison.get_spectral_properties(y_1)
         centroid_2, mean_2 = SoundComparison.get_spectral_properties(y_2)
 
-        centroid_diff = np.mean(np.nan_to_num(np.abs(centroid_1 - centroid_2) / centroid_1)) * 100
-        mean_diff = (np.abs(mean_1 - mean_2) / mean_1 * 100)
+        epsilon = 1e-10
+        centroid_1_nonzero = np.where(centroid_1 == 0, epsilon, centroid_1)
+        centroid_2_nonzero = np.where(centroid_2 == 0, epsilon, centroid_2)
+        mean_1_nonzero = np.where(mean_1 == 0, epsilon, mean_1)
+        mean_2_nonzero = np.where(mean_2 == 0, epsilon, mean_2)
+
+        centroid_diff = np.abs(centroid_1_nonzero - centroid_2_nonzero) / (centroid_1_nonzero + centroid_2_nonzero) * 100
+        mean_diff = (np.abs(mean_1_nonzero - mean_2_nonzero) / (centroid_1_nonzero+ centroid_2_nonzero) * 100)
         
         return centroid_diff, mean_diff
