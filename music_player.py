@@ -363,9 +363,9 @@ class MusicPlayer:
         wavfile.write(self.tempfilename, self.samplerate, self.proccessed_audio)
         centroid_diff, mean_diff = SoundComparison.compare_audio(self.filename, self.tempfilename)
         messagebox.showinfo(self.language["processing_time"], 
-            self.language["time_taken"] + str(time_taken)
-                            + "\n" + self.language["centroid_diff"] + str(centroid_diff)
-                            + "\n" + self.language["mean_diff"] + str(mean_diff))
+            f"{self.language["time_taken"]}{time_taken:.4f}"
+                            + f"\n{self.language["centroid_diff"]}{centroid_diff:.4f}"
+                            + f"\n{self.language["mean_diff"]}{mean_diff:.4f}")
         self.__change_buttons_state("normal")
         self.submenu.entryconfig(self.language["save"], state="normal")
         self.submenu.entryconfig(self.language["close"], state="normal")
